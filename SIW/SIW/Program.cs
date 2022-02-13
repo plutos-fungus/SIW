@@ -4,17 +4,11 @@
     {
         static void Main(string[] args)
         {
-            
-           
-            //Parameters.AddWithValue("@nameValue", nameValue);
-
-            DataManager d = new DataManager(@"CREATE TABLE vars(id INTEGER PRIMARY KEY,
-            name TEXT, value INT)");
-            string nameValue = "Tesla";
-            string priceValue = "3";
-            string RandomString = String.Format("INSERT INTO cars(name, price) VALUES('{0}', {1})", nameValue, priceValue);
-            d.ExecuteNonQuery(RandomString);
-            d.test();
+            DataManager d = new DataManager();
+            d.AddVar("a", 100);
+            d.AddVar("b", 3);
+            Console.WriteLine("a = {0}", d.GetVar("a"));
+            Console.WriteLine("b = {0}", d.GetVar("b"));
         }
     }
 }
