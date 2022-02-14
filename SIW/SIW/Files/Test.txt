@@ -2,3 +2,7 @@ Vi er lidt bedre end 56 gennemsnittet
 GG EZ
 She123eshg 31
 %asd 
++31
++ 31
+-31
+- 31

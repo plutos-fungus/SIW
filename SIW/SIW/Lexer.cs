@@ -12,6 +12,7 @@ namespace SIW
         NONE,
         INT,
         NAME,
+        OPERATOR,
         // const int lol: int = 100
         // unconst lol = 10000
     }
@@ -24,13 +25,14 @@ namespace SIW
 
         public Token(string contents, TokenType type, int line)
         {
-            if (contents != null)
+            if (contents == null)
             {
-                Contents = contents;
+                Console.Error.WriteLine("Error: token created with null string");
+                Environment.Exit(1);
             }
             else
             {
-                Console.Error.WriteLine("Error: token created with null string");
+                Contents = contents;
             }
             Type = type;
             Line = line;
@@ -39,8 +41,8 @@ namespace SIW
 
     public class Lexer
     {
-        private string[] lines = null;
-        private string[] line = null;
+        private string[] lines;
+        private string[]? line = null;
         private int lineNo = 0;
         private int wordNo = 0;
         public Lexer(string path)
@@ -56,7 +58,7 @@ namespace SIW
             }
         }
 
-        public Token Next()
+        public Token? Next()
         {
             string word;
             if(line == null) 
@@ -75,18 +77,26 @@ namespace SIW
                 }
             }
             word = line[wordNo++];
+            int wordEnum;
 
-            if(Char.IsDigit(word[0]))
+            if(Char.IsDigit(word[0]) || word[0] == '-' || word[0] == '+')
             {
-                foreach(char c in word)
+                for(wordEnum = 1; wordEnum < word.Length; wordEnum++)
                 {
+                    char c = word[wordEnum];
                     if(!Char.IsDigit(c))
                     {
-                        Console.Error.WriteLine("Error: token {0} at line {1}: token of type int cannot contain character: '{2}'", word, lineNo, c);
+                        Console.Error.WriteLine("Error: token {0} at line {1}: token of type int cannot contain nondigit character: '{2}'", word, lineNo, c);
                         Environment.Exit(1);
                     }
                 }
-                return new Token(word, TokenType.INT, lineNo);
+                if(wordEnum == 1)
+                {
+                    return new Token(word, TokenType.OPERATOR, lineNo);
+                } else
+                {
+                    return new Token(word, TokenType.INT, lineNo);
+                }
             } else if(Char.IsLetter(word[0]))
             {
                 foreach(char c in word)
