@@ -25,7 +25,7 @@ namespace SIW
         }
 
         // Adds a variable with name 'name' and value 'val' to the database
-        public void AddVar(string name, int val)
+        public void NewVar(string name, int val)
         {
             SqliteCommand cmd = new SqliteCommand("INSERT INTO vars(name, value) VALUES(@name, @value)", connection);
 
@@ -85,6 +85,14 @@ namespace SIW
             updateCMD.CommandText = "UPDATE vars SET value=@value WHERE name=@name";
             updateCMD.Parameters.AddWithValue("@value", val);
             updateCMD.ExecuteNonQuery();
+        }
+
+        public void DestroyVar(string name)
+        {
+            SqliteCommand destroyCMD = connection.CreateCommand();
+            destroyCMD.CommandText = "DELETE FROM vars WHERE name=@name";
+            destroyCMD.Parameters.AddWithValue("@name", name);
+            destroyCMD.ExecuteNonQuery();
         }
         
         //Executes any non-query on the database
