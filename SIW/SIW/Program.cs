@@ -9,6 +9,8 @@
             d.AddVar("b", 3);
             Console.WriteLine("a = {0}", d.GetVar("a"));
             Console.WriteLine("b = {0}", d.GetVar("b"));
+            d.SetVar("a", 50);
+            Console.WriteLine("a = {0}", d.GetVar("a"));
         }
     }
 }

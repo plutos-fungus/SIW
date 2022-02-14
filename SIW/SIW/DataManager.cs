@@ -19,6 +19,11 @@ namespace SIW
             cmd.ExecuteNonQuery();            
         }
 
+        ~DataManager()
+        {
+            connection.Close();
+        }
+
         // Adds a variable with name 'name' and value 'val' to the database
         public void AddVar(string name, int val)
         {
@@ -42,21 +47,48 @@ namespace SIW
         // Gets value of variable with name 'name'. If variable doesn't exist, exits with error code
         public int GetVar(string name)
         {
-            SqliteCommand cmd = new SqliteCommand(String.Format("SELECT value FROM vars WHERE name='{0}'", name), connection);
-            SqliteDataReader r = cmd.ExecuteReader();
-            if(!r.Read())
+            SqliteCommand cmd = new SqliteCommand("SELECT value FROM vars WHERE name=@name", connection);
+            cmd.Parameters.AddWithValue("@name", name);
+            using (SqliteDataReader r = cmd.ExecuteReader())
             {
-                Console.Error.WriteLine("Error: variable \"{0}\" doesn't exist", name);
-                Environment.Exit(1);
-                return -1;
-            } else
-            {
-                return r.GetInt32(0);
+                if (!r.Read())
+                {
+                    Console.Error.WriteLine("Error: variable \"{0}\" doesn't exist", name);
+                    Environment.Exit(1);
+                    return -1;
+                }
+                else
+                {
+                    return r.GetInt32(0);
+                }
             }
+        }
+
+        // Update variable of name 'name' with value 'val'
+        public void SetVar(string name, int val)
+        {
+            SqliteCommand updateCMD = connection.CreateCommand();
+
+            // Returns value of variable if variable exits
+            updateCMD.CommandText = "SELECT value FROM vars WHERE name=@name";
+            updateCMD.Parameters.AddWithValue("@name", name);
+            // check if variable name exists in database
+            using (SqliteDataReader r = updateCMD.ExecuteReader())
+            {
+                if (!r.Read())
+                {
+                    Console.Error.WriteLine("Error: variable \"{0}\" doesn't exist and thus cannot be updated", name);
+                    Environment.Exit(1);
+                }
+            }
+            // update the value
+            updateCMD.CommandText = "UPDATE vars SET value=@value WHERE name=@name";
+            updateCMD.Parameters.AddWithValue("@value", val);
+            updateCMD.ExecuteNonQuery();
         }
         
         //Executes any non-query on the database
-        public void ExecuteNonQuery(string command)
+        private void ExecuteNonQuery(string command)
         {
             SqliteCommand cmd = new SqliteCommand(command, connection);
             cmd.ExecuteNonQuery();
