@@ -12,7 +12,9 @@ namespace SIW
         NONE,
         INT,
         NAME,
-        OPERATOR,
+        UN_OP,
+        BIN_OP,
+        TER_OP,
         // const int lol: int = 100
         // unconst lol = 10000
     }
@@ -92,7 +94,7 @@ namespace SIW
                 }
                 if(wordEnum == 1)
                 {
-                    return new Token(word, TokenType.OPERATOR, lineNo);
+                    return new Token(word, TokenType.BIN_OP, lineNo);
                 } else
                 {
                     return new Token(word, TokenType.INT, lineNo);
